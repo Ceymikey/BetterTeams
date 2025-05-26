@@ -138,9 +138,6 @@ public class DamageManagement implements Listener {
 					// thrown if the players team is null
 				}
 			}
-
 		}
-
 	}
-
 }

@@ -34,6 +34,7 @@ import com.booksaw.betterTeams.team.storage.convert.Converter;
 import com.booksaw.betterTeams.team.storage.storageManager.YamlStorageManager;
 import com.booksaw.betterTeams.util.WebhookHandler;
 import lombok.Getter;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bstats.bukkit.Metrics;
@@ -72,6 +73,9 @@ public class Main extends JavaPlugin {
 	@Getter
 	private BooksawCommand teamBooksawCommand;
 
+	@Getter
+	private TeamPlaceholders teamPlaceholders;
+
 	private Metrics metrics = null;
 
 	/**
@@ -81,6 +85,14 @@ public class Main extends JavaPlugin {
 	private DamageManagement damageManagement;
 
 	private ConfigManager configManager;
+
+	private BukkitAudiences adventure;
+
+	public boolean isAdventure() {
+		return adventure != null;
+	}
+
+	private boolean closeAdventure = true;
 
 	@Override
 	public void onLoad() {
@@ -110,6 +122,13 @@ public class Main extends JavaPlugin {
 			MessageManager.setLanguage("messages");
 		}
 
+		if (adventure == null) try {
+			adventure = BukkitAudiences.create(this);
+		} catch (Exception e) {
+		}
+
+		MessageManager.setupMessageSender(adventure);
+
 		loadCustomConfigs();
 
 		setupStorage();
@@ -119,7 +138,8 @@ public class Main extends JavaPlugin {
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null
 				&& Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("PlaceholderAPI")).isEnabled()) {
 			placeholderAPI = true;
-			new TeamPlaceholders(this).register();
+			teamPlaceholders = new TeamPlaceholders(this);
+			teamPlaceholders.register();
 		}
 
 		if (Bukkit.getPluginManager().getPlugin("UltimateClaims") != null
@@ -162,7 +182,14 @@ public class Main extends JavaPlugin {
 		Team.disable();
 
 		MessageManager.dumpMessages();
+		MessageManager.dumpMessageSender();
 
+		if (closeAdventure && adventure != null) {
+			adventure.close();
+			adventure = null;
+		}
+
+		closeAdventure = true;
 	}
 
 	public void loadCustomConfigs() {
@@ -253,6 +280,7 @@ public class Main extends JavaPlugin {
 
 	public void reload() {
 
+		closeAdventure = false;
 		onDisable();
 		teamManagement = null;
 		reloadConfig();
@@ -390,9 +418,9 @@ public class Main extends JavaPlugin {
 
 		getServer().getPluginManager().registerEvents(new InventoryManagement(), this);
 		getServer().getPluginManager().registerEvents(new RankupEvents(), this);
-		if (getConfig().getBoolean("anchor.enable")){
+		if (getConfig().getBoolean("anchor.enable")) {
 			HomeAnchorManagement homeAnchorListener = new HomeAnchorManagement(this);
-    		homeAnchorListener.registerEvent();
+			homeAnchorListener.registerEvent();
 		}
 	}
 

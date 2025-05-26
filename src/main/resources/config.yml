@@ -58,6 +58,8 @@ database:
   database: spigot
   user: root
   password: password
+  additionalOptions:
+    - 'useSSL=false'
   # Prefix for SQL tables.
   # After changing this String and reloading the plugin/server,
   # BetterTeams will start using it as the new Table Prefix when storing and reading team data.
@@ -626,6 +628,11 @@ checkUpdates: true
 # This option can be used to rebuild lookups in the teams.yml file, this should never have to be used unless advised to by booksaw
 # Set this to true to rebuild the lookup tables in teams.yml for seperatedYamlStorage
 rebuildLookups: false
+
+# Number of seconds until a cache hit is invalidated
+#
+# Possible Values: [Any whole, positive number]
+invalidateCacheSeconds: 60
 
 # ------- Discord webhook manager -------
 # But how do I create a discord webhook?
