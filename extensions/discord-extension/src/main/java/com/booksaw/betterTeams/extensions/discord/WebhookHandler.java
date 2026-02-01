@@ -4,8 +4,8 @@ import com.booksaw.betterTeams.Team;
 import com.booksaw.betterTeams.TeamPlayer;
 import com.booksaw.betterTeams.customEvents.post.*;
 import com.booksaw.betterTeams.message.MessageManager;
-import dev.ceymikey.injection.DiscordPayload;
-import dev.ceymikey.injection.EmbedBuilder;
+import dev.ceymikey.toolchain.webhook.net.DiscordPayload;
+import dev.ceymikey.toolchain.webhook.payloads.Embed;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
@@ -95,7 +95,7 @@ public class WebhookHandler implements Listener {
 
 	/* Sends the actual webhook message with the event info */
 	public void sendWebhookMessage(String title, String description) {
-		EmbedBuilder embed = new EmbedBuilder.Construct()
+		Embed embed = new Embed.Construct()
 				.setUrl(configURL)
 				.setTitle(ChatColor.stripColor(title))
 				.setDescription(ChatColor.stripColor(description))
